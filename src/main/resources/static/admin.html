@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--<meta charset="UTF-8">-->
+    <meta http-equiv="Content-Type" content="multipart/form-data; charset=utf-8"/>
+    <title>后台商品管理</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+    <link rel="stylesheet" type="text/css" href="css/wangEditor.css">
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/wangEditor.js"></script>
+</head>
+<body>
+<a href="customer.html">点击此处跳转客户信息管理</a>
+<br>
+<a href="index.html">点击此处跳转支付示例</a>
+<h1 style="text-align: center">后台商品管理</h1>
+<br>
+
+<button type="button" class="btn-primary" onclick="all_goods()">显示所有商品信息</button>
+<button type="button" class="btn-primary" data-toggle="modal" data-target="#addModal" onclick="clearEditor()">上架商品
+</button>
+<button type="button" class="btn-primary" data-toggle="modal" data-target="#delModal" onclick="clearDel()">下架商品</button>
+<br>
+<br>
+<span>输入商品编号：</span>
+<input type="text" id="goodsId" name="goodsId">
+<button type="button" class="btn btn-default " data-toggle="modal" data-target="#infoModal"
+        onclick="showInfo()">显示商品详细信息
+</button>
+<button type="button" class="btn btn-default" data-toggle="modal" data-target="#changeModal"
+        onclick="beforeChange()">修改商品信息
+</button>
+<br>
+<br>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <td class="active">编号</td>
+        <td class="success">类别</td>
+        <td class="danger">名称</td>
+        <td class="info">单价</td>
+        <td class="active">销量</td>
+        <td class="danger">库存</td>
+    </tr>
+    </thead>
+    <tbody id="new_body">
+    </tbody>
+</table>
+
+<div class="modal fade bs-example-modal-lg" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">上架新商品</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form" id="stuForm">
+                    <div class="input-group">
+                        <span class="input-group-addon">类别</span>
+                        <input type="text" id="cata" class="form-control" name="cata">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">名称</span>
+                        <input type="text" id="goodsName" class="form-control" name="goodsName">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">价格</span>
+                        <input type="text" id="price" class="form-control" name="price">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">销量</span>
+                        <input type="text" id="saled" class="form-control" name="saled">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">库存</span>
+                        <input type="text" id="remain" class="form-control" name="remain">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">详细<br><br>描述</span>
+                        <div id="editor" style="max-width: 815px"></div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="addNewGoods()">确认
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="infoModalLabel">详细信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form" id="infoForm">
+                    <div class="input-group">
+                        <div id="editorInfo"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="deviceModalLabel">下架商品</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                        <span class="input-group-addon">编号</span>
+                        <input type="text" id="delGoodsId" name="delGoodsId">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-default" onclick="delGoods()" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="changeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="changeModalLabel">修改商品信息（编号必填，其余选填）</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form" id="stuForm1">
+                    <div class="input-group">
+                        <span class="input-group-addon">类别</span>
+                        <input type="text" id="cata1" class="form-control" name="cata1" placeholder="若不修改请勿填写">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">名称</span>
+                        <input type="text" id="goodsName1" class="form-control" name="goodsName1"
+                               placeholder="若不修改请勿填写">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">单价</span>
+                        <input type="text" id="price1" class="form-control" name="price1" placeholder="若不修改请勿填写">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">销量</span>
+                        <input type="text" id="saled1" class="form-control" name="saled1" placeholder="若不修改请勿填写">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">库存</span>
+                        <input type="text" id="remain1" class="form-control" name="remain1" placeholder="若不修改请勿填写">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">详细<br><br>描述</span>
+                        <div id="changeInfo" style="max-width: 815px"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"
+                        onclick="changeGoodsInfo()">确认
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+
+    var E = window.wangEditor;
+    var editor = new E('#editor');
+    editor.customConfig.showLinkImg = false;
+    editor.customConfig.uploadImgServer = '/saveImg';    //后台存储图片的url
+    editor.customConfig.uploadFileName = 'myFileName';
+    editor.create();
+
+    var e = window.wangEditor;
+    var changeInfoEditor = new e('#changeInfo');
+    changeInfoEditor.customConfig.showLinkImg = false;
+    changeInfoEditor.customConfig.uploadImgServer = '/saveImg';
+    changeInfoEditor.customConfig.uploadFileName = 'myFileName';
+    changeInfoEditor.create();
+</script>
+
+<script type="text/javascript">
+    function clearDel() {
+        $("#delGoodsId").val("");
+    }
+
+    function clearEditor() {
+        $("#cata").val("");
+        $("#goodsName").val("");
+        $("#price").val("");
+        $("#saled").val("");
+        $("#remain").val("");
+        editor.txt.clear();
+    }
+
+    function all_goods() {
+        $.ajax({
+            type: "post",
+            url: "/allGoodsInfo",
+            data: {},
+            dataType: "json",
+            success: function (res, status) {
+                var str = "";
+                if (status == "success") {
+                    for (var i = 0; i < res.length; i++) {
+                        var text = '<tr><td>' + res[i].goods_id + '</td>\n' +
+                            '<td>' + res[i].catagory + '</td>\n' +
+                            '<td>' + res[i].goods_name + '</td>\n' +
+                            '<td>' + res[i].price + '</td>\n' +
+                            '<td>' + res[i].saled + '</td>\n' +
+                            '<td>' + res[i].remain + '</td>\n' +
+                            '</td><tr>';
+                        str += text;
+                    }
+                    $("#new_body").html(str);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+
+    function addNewGoods() {
+
+        var cata = $("#cata").val();
+        var goodsName = $("#goodsName").val();
+        var price = $("#price").val();
+        var saled = $("#saled").val();
+        var remain = $("#remain").val();
+        var goods_info = editor.txt.html();
+
+        var msg = {
+            cata: cata,
+            goodsName: goodsName,
+            price: price,
+            saled: saled,
+            remain: remain,
+            goods_info: goods_info
+        };
+
+        $.ajax({
+            type: "post",
+            url: "/addNewGoods",
+            data: msg,
+            success: function (res, status) {
+                if (res == "true") {
+                    alert("上架成功！");
+                    all_goods();
+                } else {
+                    alert("上架失败！");
+                }
+            },
+            error: function () {
+                alert("数据错误！");
+            }
+        })
+    }
+
+    function showInfo() {
+
+        $("#editorInfo").html("");
+
+        var goodsId = $("#goodsId").val();
+
+        var msg = {goodsId: goodsId};
+
+        $.ajax({
+            type: "post",
+            url: "/showInfo",
+            data: msg,
+            success: function (res, status) {
+                if (status == "success") {
+                    $("#editorInfo").html(res);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+
+    function delGoods() {
+        var delGoodsId = $("#delGoodsId").val();
+
+        var msg = {delGoodsId: delGoodsId};
+
+        $.ajax({
+            type: "post",
+            url: "/delGoods",
+            data: msg,
+            success: function (res, status) {
+                if (res == "true") {
+                    alert("下架成功！");
+                    all_goods();
+                } else {
+                    alert("下架失败！");
+                }
+            },
+            error: function () {
+                alert("数据错误！");
+            }
+        })
+
+    }
+
+    function beforeChange() {
+        $("#cata1").val("");
+        $("#goodsName1").val("");
+        $("#price1").val("");
+        $("#saled1").val("");
+        $("#remain1").val("");
+
+        var goodsId = $("#goodsId").val();
+
+        var msg = {goodsId: goodsId};
+
+        $.ajax({
+            type: "post",
+            url: "/showInfo",
+            data: msg,
+            success: function (res, status) {
+                if (status == "success") {
+                    changeInfoEditor.txt.html(res);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+
+    function changeGoodsInfo() {
+        var goodsId = $("#goodsId").val();
+        var cata = $("#cata1").val();
+        var goodsName = $("#goodsName1").val();
+        var price = $("#price1").val();
+        var saled = $("#saled1").val();
+        var remain = $("#remain1").val();
+        var goods_info = changeInfoEditor.txt.html();
+
+        var msg = {
+            goodsId: goodsId,
+            cata: cata,
+            goodsName: goodsName,
+            price: price,
+            saled: saled,
+            remain: remain,
+            goods_info: goods_info
+        };
+
+        $.ajax({
+            type: "post",
+            url: "/changeGoodsInfo",
+            data: msg,
+            success: function (res, status) {
+                if (res == "true") {
+                    alert("修改成功！");
+                    all_goods();
+                } else {
+                    alert("修改失败！");
+                }
+            },
+            error: function () {
+                alert("数据错误！");
+            }
+        })
+    }
+</script>
+
+</html>

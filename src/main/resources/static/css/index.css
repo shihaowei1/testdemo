@@ -1,0 +1,11 @@
+body{
+    padding-top: 5px;
+}
+.main_box{
+    width: 40%;
+    margin: 0 auto;
+    position: center;
+}
+.btn{
+    width: 150px;
+}

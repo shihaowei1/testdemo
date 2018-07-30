@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>后台商品管理</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+</head>
+<body>
+<a href="admin.html">点击此处跳转商品信息管理</a>
+<h1 style="text-align: center">用户信息及订单管理</h1>
+<br>
+<button type="button" class="btn-primary" onclick="getAllUserInfo()">显示所有用户信息</button>
+<button type="button" class="btn-primary" data-toggle="modal" data-target="#changeInfoModal">修改用户信息</button>
+<br>
+<br>
+<span>输入用户编号：</span>
+<input type="text" id="userId" name="userId">
+<button type="button" class="btn-primary" onclick="allUserOrder()">查询所有订单</button>
+&nbsp;&nbsp;
+<span>输入订单编号：</span>
+<input type="text" id="orderId" name="orderId">
+<button type="button" class="btn-primary" onclick="orderInfo()">显示订单详细信息</button>
+<br>
+<br>
+<table class="table table-striped" width="100%">
+    <thead>
+    <tr>
+        <td class="active" width="25%">用户编号</td>
+        <td class="success" width="25%">用户账号</td>
+        <td class="danger" width="25%">用户级别</td>
+        <td class="info" width="25%">用户密码</td>
+    </tr>
+    </thead>
+    <tbody id="new_body">
+    </tbody>
+</table>
+<br>
+<table class="table table-striped" width="100%">
+    <thead>
+    <tr>
+        <td class="active" width="25%">订单编号</td>
+        <td class="success" width="25%">商品数量</td>
+        <td class="danger" width="25%">总价</td>
+        <td class="info" width="25%">是否完成</td>
+    </tr>
+    </thead>
+    <tbody id="order_body">
+    </tbody>
+</table>
+<br>
+<table class="table table-striped" width="100%">
+    <thead>
+    <tr>
+        <td class="active" width="25%">商品编号</td>
+        <td class="success" width="25%">商品名称</td>
+        <td class="danger" width="25%">单价</td>
+        <td class="info" width="25%">数量</td>
+    </tr>
+    </thead>
+    <tbody id="order_info">
+    </tbody>
+</table>
+
+<div class="modal fade" id="changeInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">更改用户信息</h4>
+                <span>输入用户账号：</span>
+                <input type="text" id="userName" name="userName">
+                <span>更改用户级别：</span>
+                <input type="text" id="userRank" name="userRank">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="changeUserInfo()">确认
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript">
+    function getAllUserInfo() {
+        $.ajax({
+            type: "post",
+            url: "/getAllUserInfo",
+            success: function (res, status) {
+                var str = "";
+                if (status == "success") {
+                    for (var i = 0; i < res.length; i++) {
+                        var text = '<tr><td>' + res[i].id + '</td>\n' +
+                            '<td>' + res[i].username + '</td>\n' +
+                            '<td>' + res[i].rank + '</td>\n' +
+                            '<td>' + res[i].password + '</td>\n' +
+                            '</td><tr>';
+                        str += text;
+                    }
+                    $("#new_body").html(str);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+
+    function changeUserInfo() {
+        var userName = $("#userName").val();
+        var userRank = $("#userRank").val();
+
+        var msg = {userName: userName, userRank: userRank};
+
+        $.ajax({
+            type: "post",
+            url: "/changeUserInfo",
+            data: msg,
+            success: function (res, status) {
+                if (res == "true") {
+                    alert("更改成功");
+                    getAllUserInfo();
+                }
+                if (res == "false") {
+                    alert("更改失败，请检查数据格式！");
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+
+    }
+
+    function allUserOrder() {
+
+        var userId = $("#userId").val();
+        var msg = {userId: userId};
+
+        $.ajax({
+            type: "post",
+            url: "/allUserOrder",
+            data: msg,
+            success: function (res, status) {
+                var str = "";
+                if (status == "success") {
+                    console.log(res);
+                    for (var i = 0; i < res.length; i++) {
+                        var text = '<tr><td>' + res[i].id + '</td>\n' +
+                            '<td>' + res[i].price + '</td>\n' +
+                            '<td>' + res[i].amount + '</td>\n' +
+                            '<td>' + res[i].result + '</td>\n' +
+                            '</td><tr>';
+                        str += text;
+                    }
+                    $("#order_body").html(str);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+
+    }
+
+    function orderInfo() {
+
+        var orderId = $("#orderId").val();
+        var msg = {orderId: orderId};
+
+        $.ajax({
+            type: "post",
+            url: "/orderInfo",
+            data: msg,
+            success: function (res, status) {
+                var str = "";
+                if (status == "success") {
+                    console.log(res);
+                    for (var i = 0; i < res.length; i++) {
+                        var text = '<tr><td>' + res[i].goods_id + '</td>\n' +
+                            '<td>' + res[i].goods_name + '</td>\n' +
+                            '<td>' + res[i].price + '</td>\n' +
+                            '<td>' + res[i].amount + '</td>\n' +
+                            '</td><tr>';
+                        str += text;
+                    }
+                    $("#order_info").html(str);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+
+    }
+</script>
+<script src="js/jquery-3.3.1.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</html>

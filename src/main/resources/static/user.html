@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="multipart/form-data; charset=utf-8"/>
+    <title>客户登录</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body onload="allUserOrder()" id="main_body">
+
+<h1 style="text-align: center">Welcome!</h1>
+
+<span>输入订单编号：</span>
+<input type="text" id="orderId" name="orderId">
+<button type="button" class="btn-primary" onclick="orderInfo()">显示订单详细信息</button>
+<button type="button" class="btn-primary" onclick="pay()" id="payBtn">结算订单</button>
+<button type="button" class="btn-primary" onclick="payInfo()" id="payInfoBtn">交易查询</button>
+<button type="button" class="btn-primary" data-toggle="modal" data-target="#refundModal">请求退款</button>
+<br><br>
+<table class="table table-striped" width="100%">
+    <thead>
+    <tr>
+        <td class="active" width="25%">订单编号</td>
+        <td class="success" width="25%">商品数量</td>
+        <td class="danger" width="25%">总价</td>
+        <td class="info" width="25%">是否付款</td>
+    </tr>
+    </thead>
+    <tbody id="order_body">
+    </tbody>
+</table>
+
+<br>
+<table class="table table-striped" width="100%">
+    <thead>
+    <tr>
+        <td class="active" width="25%">商品编号</td>
+        <td class="success" width="25%">商品名称</td>
+        <td class="danger" width="25%">单价</td>
+        <td class="info" width="25%">数量</td>
+    </tr>
+    </thead>
+    <tbody id="order_info">
+    </tbody>
+</table>
+
+<div class="modal fade" id="refundModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="deviceModalLabel">下架商品</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form">
+                    <div class="input-group">
+                        <span class="input-group-addon">订单号</span>
+                        <input type="text" id="refundId" name="refundId">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">退款原因</span>
+                        <input type="text" id="refundReason" name="refundReason">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-default" onclick="refund()" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+
+<script type="text/javascript">
+    function allUserOrder() {
+        $.ajax({
+            type: "post",
+            url: "/myUserOrder",
+            success: function (res, status) {
+                var str = "";
+                if (status == "success") {
+                    console.log(res);
+                    for (var i = 0; i < res.length; i++) {
+                        var text = '<tr><td>' + res[i].id + '</td>\n' +
+                            '<td>' + res[i].amount + '</td>\n' +
+                            '<td>' + res[i].price + '</td>\n' +
+                            '<td>' + res[i].result + '</td>\n' +
+                            '</td><tr>';
+                        str += text;
+                    }
+                    $("#order_body").html(str);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+
+    }
+
+    function orderInfo() {
+
+        var orderId = $("#orderId").val();
+        var msg = {orderId: orderId};
+
+        $.ajax({
+            type: "post",
+            url: "/orderInfo",
+            data: msg,
+            success: function (res, status) {
+                var str = "";
+                if (status == "success") {
+                    console.log(res);
+                    for (var i = 0; i < res.length; i++) {
+                        var text = '<tr><td>' + res[i].goods_id + '</td>\n' +
+                            '<td>' + res[i].goods_name + '</td>\n' +
+                            '<td>' + res[i].price + '</td>\n' +
+                            '<td>' + res[i].amount + '</td>\n' +
+                            '</td><tr>';
+                        str += text;
+                    }
+                    $("#order_info").html(str);
+                }
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+
+    }
+    
+    function pay() {
+        var orderId = $("#orderId").val();
+        var msg = {orderId: orderId};
+
+        $.ajax({
+            type: "post",
+            url: "/pay",
+            data: msg,
+            success: function (res, status) {
+                    $("#main_body").html(res);
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+
+    function refund() {
+        var refundId = $("#refundId").val();
+        var refundReason = $("#refundReason").val();
+        var msg = {refundId: refundId, refundReason: refundReason};
+
+        $.ajax({
+            type: "post",
+            url: "/refund",
+            data: msg,
+            success: function (res, status) {
+                alert(res);
+                // $("#main_body").html(res);
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+
+    function payInfo() {
+        var orderId = $("#orderId").val();
+        var msg = {orderId: orderId};
+
+        $.ajax({
+            type: "post",
+            url: "/payInfo",
+            data: msg,
+            success: function (res, status) {
+                alert(res);
+                // $("#main_body").html(res);
+            },
+            error: function () {
+                alert("数据错误");
+            }
+        })
+    }
+</script>
+</html>
